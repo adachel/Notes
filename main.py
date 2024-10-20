@@ -1,7 +1,7 @@
 import json
 import datetime
 
-def Create_or_Add_Note(name_note, text_note):
+def Create_or_Add_Note(name_note, text_note): # создать или добавить заметку
     db = datetime.datetime.now()
     current_time = db.strftime('%m.%d.%Y %H:%M')
 
@@ -15,14 +15,21 @@ def Create_or_Add_Note(name_note, text_note):
             templates.append(note)
 
         with open('data.json', 'w', encoding= 'utf-8') as file:
-            json.dump(templates, file, ensure_ascii=False)
+            for i in range(len(templates)):
+                if i == 0:
+                    file.writelines(f'[{json.dumps(templates[i])},\n')
+                elif i == len(templates) - 1:
+                    file.writelines(f'{json.dumps(templates[i])}]\n')
+                else:
+                    file.writelines(f'{json.dumps(templates[i])},\n')
+
 
     except:
         new_note = [{"Id": 1, "time": current_time, "name": name_note, "text": text_note}]
         with open('data.json', 'w', encoding= 'utf-8') as file:
-            json.dump(new_note, file, ensure_ascii=False)
+            file.write(json.dumps(new_note))
 
-def List_Note():
+def List_Note(): # список заметоk
     with open('data.json', encoding= 'utf-8') as file:
         file_content = file.read()
         templates = json.loads(file_content)
@@ -31,26 +38,34 @@ def List_Note():
         print(f"Id: {templates[i]["Id"]}; время: {templates[i]["time"]}; наименование: {templates[i]["name"]}")
 
 
-def Read_Note(Id = 0, name = ""):
+def Edit_Note(Id = 0, name = ""):
     with open('data.json', encoding='utf-8') as file:
         file_content = file.read()
         templates = json.loads(file_content)
 
     for i in range(len(templates)):
         if(Id == templates[i]["Id"] or name == templates[i]["name"]):
-            print(f"текст заметки: {templates[i]["text"]}")
+            text = templates[i]["text"]
+            print(f"Текущий текст\n{text}")
+            print("Введите новый текст")
+            new_text = input()
+            templates[i]["text"] = new_text
+            with open('data.json', 'w', encoding='utf-8') as file:
+                json.dump(templates, file, ensure_ascii=False)
 
 
 
 
-# name_note = input("Название заметки\n")
-# text_note = input("Текст заметки\n")
-#
-# Create_or_Add_Note(name_note, text_note)
+
+
+name_note = input("Название заметки\n")
+text_note = input("Текст заметки\n")
+
+Create_or_Add_Note(name_note, text_note)
 
 # List_Note()
 
-Read_Note("первая")
+# Edit_Note(0, "первая")
 
 
 
