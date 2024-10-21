@@ -1,11 +1,11 @@
-import json
 import datetime
+import json
 
-def Create_or_Add_Note(name_note, text_note): # создать или добавить заметку
+def create_or_add_note(name_note, text_note):  # создать или добавить заметку
     db = datetime.datetime.now()
-    current_time = db.strftime('%m.%d.%Y %H:%M')
+    current_time = db.strftime('%m.%d.%Y %H:%M:%S')
     try:
-        with open('data.json', encoding= 'utf-8') as file:
+        with open('data.json', encoding='utf-8') as file:
             file_content = file.read()
             templates = json.loads(file_content)
             last_elem = templates[-1]
@@ -27,28 +27,53 @@ def Create_or_Add_Note(name_note, text_note): # создать или добав
             file.write(json.dumps(new_note, ensure_ascii=False))
 
 
-def List_Note(): # список заметоk
-    with open('data.json', encoding= 'utf-8') as file:
+def list_note():  # список заметоk
+    try:
+        with open('data.json', encoding='utf-8') as file:
+            file_content = file.read()
+            templates = json.loads(file_content)
+
+        sort_templates = sorted(templates, key=lambda temp: temp["time"], reverse=True)
+
+        for i in range(len(sort_templates)):
+            print(f"Id: {sort_templates[i]["Id"]}; "
+                  f"время записи: {sort_templates[i]["time"]}; "
+                  f"наименование: {sort_templates[i]["name"]}")
+    except:
+        print("Заметок нет")
+
+
+def read_note(id):
+    result = ""
+    with open('data.json', encoding='utf-8') as file:
         file_content = file.read()
         templates = json.loads(file_content)
-
     for i in range(len(templates)):
-        print(f"Id: {templates[i]["Id"]}; время записи: {templates[i]["time"]}; наименование: {templates[i]["name"]}")
+        if (id == templates[i]["Id"]):
+            time_create = templates[i]["time"]
+            name_note = templates[i]["name"]
+            text = templates[i]["text"]
+            result = f"Время создания или изменения заметки - {time_create},\nНаименование заметки - {name_note},\nТекст заметки:\n{text}\n"
+            break
+        else: result = "Такой заметки нет"
+    return result
 
-
-def Edit_Note(Id = 0, name = ""):
+def edit_note(id):
+    db = datetime.datetime.now()
+    current_time = db.strftime('%m.%d.%Y %H:%M:%S')
     try:
         with open('data.json', encoding='utf-8') as file:
             file_content = file.read()
             templates = json.loads(file_content)
 
         for i in range(len(templates)):
-            if(Id == templates[i]["Id"] or name == templates[i]["name"]):
+            if (id == templates[i]["Id"]):
                 text = templates[i]["text"]
                 print(f"Текущий текст\n{text}")
                 print("Введите новый текст")
                 new_text = input()
                 templates[i]["text"] = new_text
+                templates[i]["time"] = current_time
                 with open('data.json', 'w', encoding='utf-8') as file:
                     for i in range(len(templates)):
                         if i == 0:
@@ -61,7 +86,34 @@ def Edit_Note(Id = 0, name = ""):
         print("Заметок нет")
 
 
-
+def menu_notes():
+    print("Приложение ЗАМЕТКИ")
+    print("Выберите действие")
+    while True:
+        ch = int(input("1 - Создать или добавить заметку, 2 - Просмотр списка заметок, 3 - Просмотр заметки, 4 - Изменить заметку, 5 - Удалить заметку, 0 - Выход из программы\n"))
+        match ch:
+            case 1:
+                name_note = input("Название заметки\n")
+                text_note = input("Текст заметки\n")
+                create_or_add_note(name_note, text_note)
+                continue
+            case 2:
+                list_note()
+                continue
+            case 3:
+                id_note = int(input("Введите Id заметки\n"))
+                print(read_note(id_note))
+                continue
+            case 4:
+                id_note = int(input("Введите Id заметки\n"))
+                edit_note(id_note)
+                continue
+            case 5:
+                print("Удалить заметку")
+                continue
+            case 0:
+                print("Выход из программы")
+                break
 
 
 
@@ -72,7 +124,9 @@ def Edit_Note(Id = 0, name = ""):
 
 # List_Note()
 
-Edit_Note(0, "первая")
+# Edit_Note(0, "первая")
+
+menu_notes()
 
 
 
