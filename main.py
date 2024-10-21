@@ -43,7 +43,7 @@ def list_note():  # список заметоk
         print("Заметок нет")
 
 
-def read_note(id):
+def read_note(id): # чтение заметки
     result = ""
     with open('data.json', encoding='utf-8') as file:
         file_content = file.read()
